@@ -68,7 +68,15 @@ app.post("/api/absensi/absen", (req, res) => {
 
 sequelize
   .authenticate()
-  .then(() => console.log("Database connected..."))
+  .then(() => {
+    console.log("Database connected...");
+
+    // Sinkronisasi model dengan database
+    return sequelize.sync(); // Sinkronisasi model ke database (buat tabel jika belum ada)
+  })
+  .then(() => {
+    console.log("Sinkronisasi tabel selesai.");
+  })
   .catch((err) => console.log("Error: " + err));
 
 const PORT = process.env.PORT || 5000;

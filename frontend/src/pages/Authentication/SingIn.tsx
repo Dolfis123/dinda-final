@@ -24,11 +24,17 @@ const SignIn: React.FC = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // Redirect to dashboard if login is successful
-        navigate('/dashboard');
+        // Periksa peran (role) dari data yang diterima
+        if (data.role === 'pegawai') {
+          // Redirect ke halaman pegawai
+          navigate('/pegawai-absensi');
+        } else if (data.role === 'admin') {
+          // Redirect ke halaman dashboard admin
+          navigate('/dashboard');
+        }
       } else {
-        // Display error message if login fails
-        setError(data.Error || 'Login failed, please try again.');
+        // Tampilkan pesan error jika login gagal
+        setError(data.message || 'Login failed, please try again.');
       }
     } catch (err) {
       setError('Server error, please try again later.');
@@ -47,7 +53,7 @@ const SignIn: React.FC = () => {
               </Link>
 
               <span className="mt-15 inline-block">
-                {/* SVG Illustration (if needed) */}
+                {/* SVG image or logo */}
               </span>
             </div>
           </div>

@@ -11,6 +11,7 @@ import Settings from './pages/Settings';
 import DefaultLayout from './layout/DefaultLayout';
 import React from 'react';
 import SignIn from './pages/Authentication/SingIn'; // Correct the filename typo
+import PegawaiAbsensi from './pages/AbsensiPegawai/PegawaiAbsensi';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -35,6 +36,15 @@ function App() {
           <>
             <PageTitle title="Sign In | TailAdmin - Tailwind CSS Admin Dashboard Template" />
             <SignIn />
+          </>
+        }
+      />
+      <Route
+        path="/pegawai-absensi"
+        element={
+          <>
+            <PageTitle title="Pegawai Absensi | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+            <PegawaiAbsensi />
           </>
         }
       />
