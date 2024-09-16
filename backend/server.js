@@ -6,11 +6,20 @@ const absensiRoutes = require("./routes/absensiRoutes");
 const faceDetectionRoutes = require("./routes/faceDetectionRoutes");
 const pegawaiRoutes = require("./routes/pegawaiRoutes");
 const absensiRoutesCrud = require("./routes/absensiRoutesCrud");
-
+const authRoutes = require("./routes/authRoutes");
+const session = require("express-session");
 const sequelize = require("./config/database");
 
 const app = express();
-
+// Middleware
+app.use(express.json());
+app.use(
+  session({
+    secret: "secretkey", // Ganti dengan secret yang lebih aman
+    resave: false,
+    saveUninitialized: true,
+  })
+);
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -23,6 +32,7 @@ app.use("/api/absensi", absensiRoutes);
 app.use("/api/face-detection", faceDetectionRoutes);
 app.use("/api/pegawai", pegawaiRoutes);
 app.use("/api/absensi-crud", absensiRoutesCrud);
+app.use("/auth", authRoutes);
 
 app.post("/api/absensi/absen", (req, res) => {
   const now = new Date();
