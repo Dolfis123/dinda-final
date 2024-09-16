@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
-
 import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
 import Pegawai from './pages/Dashboard/Pegawai';
@@ -12,6 +11,8 @@ import DefaultLayout from './layout/DefaultLayout';
 import React from 'react';
 import SignIn from './pages/Authentication/SingIn'; // Correct the filename typo
 import PegawaiAbsensi from './pages/AbsensiPegawai/PegawaiAbsensi';
+import ProtectedRoute from './pages/ProtectedRoute';
+import AcountEmployee from './pages/Dashboard/AcountEmployee';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -40,73 +41,82 @@ function App() {
         }
       />
       <Route
-        path="/pegawai-absensi"
+        path="/test"
         element={
           <>
-            <PageTitle title="Pegawai Absensi | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-            <PegawaiAbsensi />
+            <PageTitle title="Sign In | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+            <AcountEmployee />
           </>
         }
       />
-
-      {/* DefaultLayout wraps authenticated routes */}
       <Route
-        path="/dashboard"
+        path="/pegawai-absensi"
         element={
-          <DefaultLayout>
-            <PageTitle title="Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-            <Pegawai />
-          </DefaultLayout>
+          <ProtectedRoute role="pegawai">
+            <PageTitle title="Pegawai Absensi | Admin" />
+            <PegawaiAbsensi />
+          </ProtectedRoute>
         }
       />
 
+      {/* Protected Routes: Wrap with ProtectedRoute */}
       <Route
         path="/dashboard"
         element={
-          <DefaultLayout>
-            <PageTitle title="Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-            <Pegawai />
-          </DefaultLayout>
+          <ProtectedRoute role="admin">
+            <DefaultLayout>
+              <PageTitle title="Dashboard | Admin" />
+              <Pegawai />
+            </DefaultLayout>
+          </ProtectedRoute>
         }
       />
 
       <Route
         path="/AbsensiPegawai/data-absensi"
         element={
-          <DefaultLayout>
-            <PageTitle title="Data Absensi Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-            <DataAbsensi />
-          </DefaultLayout>
+          <ProtectedRoute role="admin">
+            <DefaultLayout>
+              <PageTitle title="Data Absensi Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <DataAbsensi />
+            </DefaultLayout>
+          </ProtectedRoute>
         }
       />
 
       <Route
         path="/AbsensiPegawai/absensi-detection"
         element={
-          <DefaultLayout>
-            <PageTitle title="Absensi Detection Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-            <AbsensiDetection />
-          </DefaultLayout>
+          <ProtectedRoute role="admin">
+            <DefaultLayout>
+              <PageTitle title="Absensi Detection Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <AbsensiDetection />
+            </DefaultLayout>
+          </ProtectedRoute>
         }
       />
 
       <Route
         path="/AbsensiPegawai/face-registration"
         element={
-          <DefaultLayout>
-            <PageTitle title="Face Registration Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-            <FaceRegistration />
-          </DefaultLayout>
+          <ProtectedRoute role="admin">
+            <DefaultLayout>
+              <PageTitle title="Face Registration Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <FaceRegistration />
+            </DefaultLayout>
+          </ProtectedRoute>
         }
       />
 
       <Route
         path="/settings"
         element={
-          <DefaultLayout>
-            <PageTitle title="Settings | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-            <Settings />
-          </DefaultLayout>
+          <ProtectedRoute role="admin">
+            <DefaultLayout>
+              <PageTitle title="Settings | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <Settings />
+            </DefaultLayout>
+          </ProtectedRoute>
         }
       />
     </Routes>

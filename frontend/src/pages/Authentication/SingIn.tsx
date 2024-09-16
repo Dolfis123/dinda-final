@@ -24,12 +24,12 @@ const SignIn: React.FC = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // Periksa peran (role) dari data yang diterima
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('role', data.role); // Simpan role user di localStorage
+
         if (data.role === 'pegawai') {
-          // Redirect ke halaman pegawai
           navigate('/pegawai-absensi');
         } else if (data.role === 'admin') {
-          // Redirect ke halaman dashboard admin
           navigate('/dashboard');
         }
       } else {

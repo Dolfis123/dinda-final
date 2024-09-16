@@ -73,3 +73,77 @@ exports.register = async (req, res) => {
       .json({ message: "Terjadi kesalahan server", error: err.message });
   }
 };
+// Fungsi untuk mengedit user
+exports.updateUser = async (req, res) => {
+  const { id } = req.params; // Mengambil id user dari parameter
+  const { email, password, role } = req.body;
+
+  try {
+    // Cari user berdasarkan ID
+    const user = await Login.findByPk(id);
+    if (!user) {
+      return res.status(404).json({ message: "User tidak ditemukan" });
+    }
+
+    // Update data yang ingin diubah
+    user.email = email || user.email;
+    user.role = role || user.role;
+
+    // Jika password diupdate, hash ulang
+    if (password) {
+      const saltRounds = 10;
+      user.password = await bcrypt.hash(password, saltRounds);
+    }
+
+    // Simpan perubahan
+    await user.save();
+
+    return res.status(200).json({ message: "User berhasil diperbarui", user });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: "Terjadi kesalahan server", error: err.message });
+  }
+};
+// Fungsi untuk menghapus user
+exports.deleteUser = async (req, res) => {
+  const { id } = req.params; // Mengambil id user dari parameter
+
+  try {
+    // Cari user berdasarkan ID
+    const user = await Login.findByPk(id);
+    if (!user) {
+      return res.status(404).json({ message: "User tidak ditemukan" });
+    }
+
+    // Hapus user
+    await user.destroy();
+
+    return res.status(200).json({ message: "User berhasil dihapus" });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: "Terjadi kesalahan server", error: err.message });
+  }
+};
+
+// Fungsi untuk mendapatkan user berdasarkan role
+// Fungsi untuk mendapatkan user dengan role 'pegawai' saja
+exports.getUsersByRole = async (req, res) => {
+  try {
+    // Cari user dengan role 'pegawai'
+    const users = await Login.findAll({ where: { role: "pegawai" } });
+
+    if (users.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "User dengan role 'pegawai' tidak ditemukan" });
+    }
+
+    return res.status(200).json(users);
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: "Terjadi kesalahan server", error: err.message });
+  }
+};
