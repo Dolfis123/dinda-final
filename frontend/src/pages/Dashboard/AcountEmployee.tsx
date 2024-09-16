@@ -17,6 +17,8 @@ const AcountEmployee: React.FC = () => {
   const [modalAction, setModalAction] = useState<'add' | 'edit' | 'view'>(
     'add',
   );
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [passwordError, setPasswordError] = useState<string>('');
 
   // Fetch login data with role 'pegawai'
   const fetchLogins = async () => {
@@ -44,6 +46,8 @@ const AcountEmployee: React.FC = () => {
   ) => {
     setModalAction(action);
     setCurrentLogin(login);
+    setConfirmPassword(''); // Clear confirm password on open
+    setPasswordError('');
     setIsModalOpen(true);
   };
 
@@ -56,11 +60,15 @@ const AcountEmployee: React.FC = () => {
   // Handle save (add or edit)
   const handleSave = async (e: FormEvent) => {
     e.preventDefault();
+    if (currentLogin?.password !== confirmPassword) {
+      setPasswordError('Password dan konfirmasi password tidak cocok.');
+      return;
+    }
     try {
       if (modalAction === 'add') {
         await axios.post('http://localhost:5000/auth/register', {
           ...currentLogin,
-          role: 'pegawai',
+          role: 'pegawai', // Set role to 'pegawai' when adding
         });
       } else if (modalAction === 'edit' && currentLogin) {
         await axios.put(
@@ -107,6 +115,11 @@ const AcountEmployee: React.FC = () => {
       ...prevState!,
       [name]: value,
     }));
+  };
+
+  // Handle confirm password change
+  const handleConfirmPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setConfirmPassword(e.target.value);
   };
 
   return (
@@ -223,21 +236,51 @@ const AcountEmployee: React.FC = () => {
                   />
                 </div>
 
+                {modalAction === 'add' && (
+                  <>
+                    <div>
+                      <label className="block text-gray-700">
+                        Konfirmasi Password
+                      </label>
+                      <input
+                        type="password"
+                        className="border rounded w-full py-2 px-3"
+                        value={confirmPassword}
+                        onChange={handleConfirmPasswordChange}
+                        required
+                      />
+                      {passwordError && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {passwordError}
+                        </p>
+                      )}
+                    </div>
+                  </>
+                )}
+
                 <div>
                   <label className="block text-gray-700">Role</label>
                   <select
                     className="border rounded w-full py-2 px-3"
                     name="role"
-                    value={currentLogin?.role || 'pegawai'}
-                    onChange={handleInputChange}
-                    disabled={
-                      modalAction === 'view' ||
-                      modalAction === 'edit' ||
+                    value={
                       modalAction === 'add'
+                        ? 'pegawai'
+                        : currentLogin?.role || ''
                     }
+                    onChange={handleInputChange}
+                    disabled={modalAction === 'view' || modalAction === 'edit'}
                     required
                   >
-                    <option value="pegawai">Pegawai</option>
+                    {/* Menyembunyikan opsi dan mengatur nilai role menjadi 'pegawai' untuk tambah login */}
+                    {modalAction === 'add' ? (
+                      <option value="pegawai">Pegawai</option>
+                    ) : (
+                      <>
+                        <option value="admin">Admin</option>
+                        <option value="pegawai">Pegawai</option>
+                      </>
+                    )}
                   </select>
                 </div>
               </div>
@@ -252,7 +295,7 @@ const AcountEmployee: React.FC = () => {
               )}
               <button
                 type="button"
-                className="ml-2 bg-gray-500 text-white px-4 py-2 rounded"
+                className="ml-2 bg-neutral-500 text-white px-4 py-2 rounded"
                 onClick={closeModal}
               >
                 Tutup
@@ -276,7 +319,7 @@ const AcountEmployee: React.FC = () => {
                 Hapus
               </button>
               <button
-                className="ml-2 bg-gray-500 text-white px-4 py-2 rounded"
+                className="ml-2 bg-neutral-500 text-white px-4 py-2 rounded"
                 onClick={closeConfirm}
               >
                 Batal

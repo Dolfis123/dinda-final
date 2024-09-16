@@ -40,21 +40,24 @@ function App() {
           </>
         }
       />
-      <Route
-        path="/test"
-        element={
-          <>
-            <PageTitle title="Sign In | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-            <AcountEmployee />
-          </>
-        }
-      />
+
       <Route
         path="/pegawai-absensi"
         element={
           <ProtectedRoute role="pegawai">
             <PageTitle title="Pegawai Absensi | Admin" />
             <PegawaiAbsensi />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/acount-employess"
+        element={
+          <ProtectedRoute role="admin">
+            <DefaultLayout>
+              <PageTitle title="Acount Employee | Admin" />
+              <AcountEmployee />
+            </DefaultLayout>
           </ProtectedRoute>
         }
       />

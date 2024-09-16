@@ -175,6 +175,7 @@ const AbsensiDetection: React.FC = () => {
           >
             {' '}
             {/* // Tambahkan margin jika perlu */}
+            <h1>Hasil Gambar</h1>
             <img
               src={imageSrc}
               alt="Gambar Hasil"

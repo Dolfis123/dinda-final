@@ -448,7 +448,7 @@ const Pegawai: React.FC = () => {
                 Hapus
               </button>
               <button
-                className="bg-gray-500 text-white px-4 py-2 rounded"
+                className="bg-neutral-500 text-white px-4 py-2 rounded"
                 onClick={closeConfirm}
               >
                 Batal
