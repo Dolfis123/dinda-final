@@ -1,14 +1,35 @@
 const Pegawai = require("../models/pegawaiModel");
 
 // Create Pegawai
+// Create Pegawai
 exports.createPegawai = async (req, res) => {
   try {
+    // Jika nip_nik kosong, ganti dengan null
+    if (!req.body.nip_nik || req.body.nip_nik.trim() === "") {
+      req.body.nip_nik = null;
+    }
+
+    // Cek apakah NIK sudah terdaftar
+    if (req.body.nip_nik) {
+      const existingPegawai = await Pegawai.findOne({
+        where: { nip_nik: req.body.nip_nik },
+      });
+
+      if (existingPegawai) {
+        return res.status(400).json({
+          message: "NIP/NIK sudah terdaftar",
+        });
+      }
+    }
+
+    // Jika tidak ada duplikasi, buat pegawai baru
     const pegawai = await Pegawai.create(req.body);
     res.status(201).json({
       message: "Pegawai created successfully",
       data: pegawai,
     });
   } catch (error) {
+    console.error("Error creating Pegawai: ", error);
     res.status(500).json({ message: "Error creating Pegawai", error });
   }
 };

@@ -15,9 +15,10 @@ const Pegawai = sequelize.define(
     },
     nip_nik: {
       type: DataTypes.STRING(50),
-      unique: true,
       allowNull: true,
+      unique: true, // Tetap unique, tapi null diizinkan
     },
+
     tempat_lahir: {
       type: DataTypes.STRING(100),
       allowNull: true,

@@ -74,8 +74,12 @@ const Pegawai: React.FC = () => {
       }
       fetchPegawai();
       closeModal();
-    } catch (error) {
-      console.error('Error saving pegawai', error);
+    } catch (error: any) {
+      if (error.response && error.response.status === 400) {
+        alert(error.response.data.message); // Tampilkan pesan NIP/NIK sudah terdaftar
+      } else {
+        console.error('Error saving pegawai', error);
+      }
     }
   };
 
@@ -83,6 +87,7 @@ const Pegawai: React.FC = () => {
   const handleDelete = async (id: number) => {
     try {
       await axios.delete(`http://localhost:5000/api/pegawai/${id}`);
+
       fetchPegawai();
       closeConfirm();
     } catch (error) {
@@ -263,7 +268,7 @@ const Pegawai: React.FC = () => {
                     value={currentPegawai?.nip_nik || ''}
                     onChange={handleInputChange}
                     readOnly={modalAction === 'view'}
-                    required
+                    // Hapus required untuk membuat NIP/NIK opsional
                   />
                 </div>
 
@@ -424,7 +429,7 @@ const Pegawai: React.FC = () => {
               )}
               <button
                 type="button"
-                className="ml-2 bg-gray-500 text-white px-4 py-2 rounded"
+                className="ml-2 bg-neutral-500 text-white px-4 py-2 rounded"
                 onClick={closeModal}
               >
                 Tutup
