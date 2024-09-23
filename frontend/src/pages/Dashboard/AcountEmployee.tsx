@@ -123,7 +123,7 @@ const AcountEmployee: React.FC = () => {
   };
 
   return (
-    <div>
+    <div style={{ color: 'black', fontWeight: '500' }}>
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold">Data Login</h1>
         <button
@@ -138,14 +138,14 @@ const AcountEmployee: React.FC = () => {
         <p>Loading...</p>
       ) : (
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+          <table
+            className="w-full text-sm text-left text-gray-500 dark:text-gray-400"
+            style={{ color: 'black', fontWeight: '500' }}
+          >
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
                 <th scope="col" className="px-6 py-3">
                   No
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  ID
                 </th>
                 <th scope="col" className="px-6 py-3">
                   Email
@@ -165,7 +165,6 @@ const AcountEmployee: React.FC = () => {
                   className="odd:bg-white even:bg-gray-50 dark:odd:bg-gray-900 dark:even:bg-gray-800 border-b dark:border-gray-700"
                 >
                   <td className="px-6 py-4">{index + 1}</td>
-                  <td className="px-6 py-4">{l.id}</td>
                   <td className="px-6 py-4">{l.email}</td>
                   <td className="px-6 py-4">{l.role}</td>
                   <td className="px-6 py-4">

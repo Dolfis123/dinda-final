@@ -122,6 +122,8 @@ const AbsensiDetection: React.FC = () => {
         flexDirection: 'column',
         alignItems: 'center',
         minHeight: '100vh',
+        color: 'black',
+        fontWeight: '500',
       }}
     >
       <div

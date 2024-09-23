@@ -118,7 +118,7 @@ const Pegawai: React.FC = () => {
   };
 
   return (
-    <div>
+    <div style={{ color: 'black', fontWeight: '500' }}>
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold">Data Pegawai</h1>
         <button
@@ -134,7 +134,10 @@ const Pegawai: React.FC = () => {
       ) : (
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
           <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <thead
+              className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 "
+              style={{ color: 'black', fontWeight: '500' }}
+            >
               <tr>
                 <th scope="col" className="px-6 py-3">
                   No
@@ -183,7 +186,10 @@ const Pegawai: React.FC = () => {
                 </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody
+              className="p-4 border-b border-blue-gray-50"
+              style={{ color: 'black', fontWeight: '500' }}
+            >
               {pegawai.map((p, index) => (
                 <tr
                   key={p.id_pegawai}

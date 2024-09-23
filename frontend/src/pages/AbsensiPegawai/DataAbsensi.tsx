@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 // Define a type for the employee and absensi data based on your actual data structure
 type Pegawai = {
+  id_face_data: number;
   id_pegawai: string;
   nama: string;
   nip_nik: string;
@@ -110,9 +112,85 @@ function DataAbsensi() {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
+  // Filter absensi berdasarkan bulan dan tahun
   const filteredAbsensi = selectedDate
-    ? absensi.filter((item) => item.tanggal_absen === selectedDate)
+    ? absensi.filter((item) => {
+        const [year, month] = selectedDate.split('-');
+        const itemDate = new Date(item.tanggal_absen);
+        return (
+          itemDate.getFullYear() === parseInt(year, 10) &&
+          itemDate.getMonth() + 1 === parseInt(month, 10)
+        );
+      })
     : absensi;
+
+  // Fungsi untuk generate PDF menggunakan jsPDF
+  const handleGeneratePDF = () => {
+    const doc = new jsPDF();
+
+    // Array nama-nama bulan
+    const months = [
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
+    ];
+
+    // Jika `selectedDate` diisi, ubah bulan menjadi nama bulan
+    const date = selectedDate
+      ? (() => {
+          const [year, month] = selectedDate.split('-');
+          return `${months[parseInt(month, 10) - 1]}-${year}`; // Gunakan nama bulan, bukan angka
+        })()
+      : 'Laporan_Tidak_Berjudul';
+
+    // Judul PDF
+    // Judul PDF
+    doc.setTextColor(0, 0, 0); // Set warna teks menjadi hitam
+    doc.setFontSize(16); // Set ukuran font
+    doc.text('UPTD PUSKESMAS MASNI', 20, 10); // Pastikan posisi Y tidak terlalu rendah
+    doc.setFontSize(12); // Set ukuran font lebih kecil untuk sub-judul
+    doc.text(`Laporan Absensi ${date}`, 20, 20); // Pastikan ini muncul di bawah judul
+
+    // Tabel data absensi
+    doc.autoTable({
+      head: [
+        [
+          'No',
+          'Nama',
+          'NIP',
+          'Jenis Kelamin',
+          'Tanggal Absen',
+          'Waktu Absen',
+          'Status Absen',
+          'Metode Absen',
+        ],
+      ],
+      body: filteredAbsensi.map((item, index) => [
+        index + 1,
+        item.Pegawai?.nama,
+        item.Pegawai?.nip_nik,
+        item.Pegawai?.jenis_kelamin,
+        item.tanggal_absen,
+        item.waktu_absen,
+        item.status_absen,
+        item.metode_absen,
+      ]),
+      startY: 30, // Pastikan ini cukup jauh dari judul agar tidak tumpang tindih
+      bodyStyles: { textColor: [0, 0, 0] }, // Set warna teks di body menjadi hitam
+    });
+
+    // Simpan file PDF dengan nama sesuai bulan (nama bulan) dan tahun
+    doc.save(`Laporan_Absensi_${date}.pdf`);
+  };
 
   const currentItems = filteredAbsensi.slice(indexOfFirstItem, indexOfLastItem);
 
@@ -122,7 +200,10 @@ function DataAbsensi() {
 
   return (
     // JSX code remains the same
-    <div className="relative flex flex-col w-full h-full text-gray-700 bg-white shadow-md rounded-xl bg-clip-border">
+    <div
+      className="relative flex flex-col w-full h-full text-gray-700 bg-white shadow-md rounded-xl bg-clip-border"
+      style={{ color: 'black', fontWeight: '500' }}
+    >
       {/* Button Absen Manual */}
       <div className="p-4">
         <button
@@ -137,13 +218,21 @@ function DataAbsensi() {
       <div className="p-4">
         <label className="block mb-2">Pilih Tanggal:</label>
         <input
-          type="date"
+          type="month"
           value={selectedDate}
           onChange={handleDateChange}
           className="border p-2 rounded w-full"
         />
       </div>
-
+      {/* Tombol untuk generate PDF */}
+      <div className="p-4">
+        <button
+          className="bg-green-500 text-white p-2 rounded"
+          onClick={handleGeneratePDF}
+        >
+          Download PDF
+        </button>
+      </div>
       {/* Modal untuk Absen Manual */}
       {showModal && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center">
@@ -241,7 +330,10 @@ function DataAbsensi() {
       {/* Tabel Absensi */}
       <div className="p-6 px-0 overflow-scroll">
         <table className="w-full mt-4 text-left table-auto min-w-max">
-          <thead>
+          <thead
+            className="p-4 border-b border-blue-gray-50"
+            style={{ color: 'black', fontWeight: '500' }}
+          >
             <tr>
               <th className="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
                 Nama
@@ -269,7 +361,10 @@ function DataAbsensi() {
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody
+            className="p-4 border-b border-blue-gray-50"
+            style={{ color: 'black', fontWeight: '500' }}
+          >
             {currentItems.length > 0 ? (
               currentItems.map((item, index) => (
                 <tr key={index}>
