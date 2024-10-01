@@ -64,7 +64,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     >
       {/* <!-- SIDEBAR HEADER --> */}
       <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
-        <NavLink to="/">
+        <NavLink to="#">
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <img
               src={Logo}
@@ -211,7 +211,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 (isActive && '!text-white')
                               }
                             >
-                              Acount Employee
+                              Akun Pegawai
                             </NavLink>
                           </li>
                         </ul>
@@ -320,7 +320,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 (isActive && '!text-white')
                               }
                             >
-                              Absensi Detection
+                              Absensi Deteksi
                             </NavLink>
                           </li>
                           <li>
@@ -331,7 +331,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 (isActive && '!text-white')
                               }
                             >
-                              Face Registration
+                              Daftar Wajah
                             </NavLink>
                           </li>
                         </ul>
@@ -381,7 +381,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       </clipPath>
                     </defs>
                   </svg>
-                  Settings
+                  Pengaturan
                 </NavLink>
               </li>
               {/* <!-- Menu Item Settings --> */}

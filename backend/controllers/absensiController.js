@@ -7,7 +7,6 @@ const FaceData = require("../models/faceDataModel");
 const Absensi = require("../models/absensiModel");
 
 // Fungsi untuk menghitung Cosine Similarity antara dua encoding wajah
-// Fungsi untuk menghitung Cosine Similarity antara dua encoding wajah
 function cosineSimilarity(encoding1, encoding2) {
   let dotProduct = 0.0;
   let normA = 0.0;
@@ -22,7 +21,7 @@ function cosineSimilarity(encoding1, encoding2) {
   normA = Math.sqrt(normA);
   normB = Math.sqrt(normB);
 
-  if (normA === 0 || normB === 0) return 0; // Pencegahan jika ada vector yang nol
+  if (normA === 0 || normB === 0) return 0;
 
   return dotProduct / (normA * normB);
 }
@@ -36,6 +35,7 @@ function euclideanDistance(encoding1, encoding2) {
   return Math.sqrt(sum);
 }
 
+// Fungsi untuk membandingkan kesamaan antara dua encoding wajah
 function areEncodingsSimilar(
   encoding1,
   encoding2,
@@ -49,16 +49,49 @@ function areEncodingsSimilar(
     `Cosine Similarity: ${cosineSimilarityValue}, Euclidean Distance: ${euclideanDistanceValue}`
   );
 
-  // Memastikan kedua metode perbandingan digunakan dengan nilai threshold yang lebih ketat
   return (
     cosineSimilarityValue > cosineThreshold &&
     euclideanDistanceValue < euclideanThreshold
   );
 }
 
+// Fungsi Haversine untuk menghitung jarak antara dua titik koordinat
+function haversine(lat1, lon1, lat2, lon2) {
+  const toRad = (x) => (x * Math.PI) / 180;
+  const R = 6371e3; // Radius bumi dalam meter
+  const φ1 = toRad(lat1);
+  const φ2 = toRad(lat2);
+  const Δφ = toRad(lat2 - lat1);
+  const Δλ = toRad(lon2 - lon1);
+
+  const a =
+    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c; // Distance in meters
+}
+
 exports.absen = async (req, res) => {
   try {
-    const imageBase64 = req.body.image;
+    const { latitude, longitude, image } = req.body;
+    const kantorLat = -0.8465933672547111; // Perbarui dengan koordinat baru
+    const kantorLon = 134.0496637551596; // Perbarui dengan koordinat baru
+
+    // Hitung jarak antara lokasi pengguna dan kantor
+    const distance = haversine(latitude, longitude, kantorLat, kantorLon);
+    console.log(`Jarak dari kantor: ${distance} meter`);
+    const radius = 100; // Radius 50 meter
+
+    if (distance > radius) {
+      return res.status(400).json({
+        message:
+          "Anda berada di luar radius kantor, tidak dapat melakukan absensi.",
+        success: false,
+      });
+    }
+
+    const imageBase64 = image;
     const imageBuffer = Buffer.from(imageBase64.split(",")[1], "base64");
     const imagePath = path.join(
       __dirname,
@@ -69,13 +102,13 @@ exports.absen = async (req, res) => {
 
     // Kirim gambar ke server Python untuk mendeteksi wajah dan mendapatkan encoding
     const formData = new FormData();
-    formData.append("images", fs.createReadStream(imagePath)); // Append gambar dengan key 'images'
+    formData.append("images", fs.createReadStream(imagePath));
 
     const response = await axios.post(
       `${process.env.PYTHON_SERVER_URL}/detect-face`,
       formData,
       {
-        headers: formData.getHeaders(), // Perbarui headers dengan formData.getHeaders()
+        headers: formData.getHeaders(),
       }
     );
 
@@ -86,7 +119,7 @@ exports.absen = async (req, res) => {
         .json({ message: response.data.message, success: false });
     }
 
-    const faceEncodings = response.data.face_encodings; // Semua encoding yang diterima dari Python
+    const faceEncodings = response.data.face_encodings;
     const faceData = await FaceData.findAll();
     let matchedPegawai = null;
 
@@ -96,7 +129,7 @@ exports.absen = async (req, res) => {
       let cosineSimilarities = [];
       let euclideanDistances = [];
 
-      // Cek setiap encoding wajah yang baru dengan encoding yang disimpan di database
+      // Cek setiap encoding wajah baru dengan encoding yang disimpan di database
       for (const encoding of faceEncodings) {
         for (const storedEncoding of storedEncodings) {
           const cosineSimilarityValue = cosineSimilarity(
@@ -108,7 +141,6 @@ exports.absen = async (req, res) => {
             encoding
           );
 
-          // Catat setiap nilai untuk dihitung rata-ratanya nanti
           cosineSimilarities.push(cosineSimilarityValue);
           euclideanDistances.push(euclideanDistanceValue);
         }
@@ -125,7 +157,7 @@ exports.absen = async (req, res) => {
       console.log(`Rata-rata Cosine Similarity: ${averageCosineSimilarity}`);
       console.log(`Rata-rata Euclidean Distance: ${averageEuclideanDistance}`);
 
-      // Jika rata-rata memenuhi threshold, berarti wajahnya dianggap cocok
+      // Jika rata-rata memenuhi threshold, berarti wajah cocok
       if (averageCosineSimilarity > 0.25 && averageEuclideanDistance < 0.3) {
         matchedPegawai = await Pegawai.findByPk(data.id_pegawai);
         break;

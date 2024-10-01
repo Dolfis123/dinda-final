@@ -11,7 +11,7 @@ exports.login = async (req, res) => {
     const user = await Login.findOne({ where: { email } });
 
     if (!user) {
-      return res.status(404).json({ message: "User tidak ditemukan" });
+      return res.status(404).json({ message: "email tidak ditemukan" });
     }
 
     // Verifikasi password
@@ -75,8 +75,8 @@ exports.register = async (req, res) => {
 };
 // Fungsi untuk mengedit user
 exports.updateUser = async (req, res) => {
-  const { id } = req.params; // Mengambil id user dari parameter
-  const { email, password, role } = req.body;
+  const { id } = req.params;
+  const { email, password } = req.body; // Remove 'role' from the destructuring
 
   try {
     // Cari user berdasarkan ID
@@ -85,9 +85,16 @@ exports.updateUser = async (req, res) => {
       return res.status(404).json({ message: "User tidak ditemukan" });
     }
 
-    // Update data yang ingin diubah
-    user.email = email || user.email;
-    user.role = role || user.role;
+    // Validasi email baru
+    if (email) {
+      const emailExists = await Login.findOne({ where: { email } });
+      if (emailExists && emailExists.id !== user.id) {
+        return res
+          .status(400)
+          .json({ message: "Email sudah digunakan oleh pengguna lain" });
+      }
+      user.email = email; // Update email
+    }
 
     // Jika password diupdate, hash ulang
     if (password) {
@@ -100,11 +107,13 @@ exports.updateUser = async (req, res) => {
 
     return res.status(200).json({ message: "User berhasil diperbarui", user });
   } catch (err) {
+    console.error("Kesalahan saat memperbarui user:", err.message);
     return res
       .status(500)
       .json({ message: "Terjadi kesalahan server", error: err.message });
   }
 };
+
 // Fungsi untuk menghapus user
 exports.deleteUser = async (req, res) => {
   const { id } = req.params; // Mengambil id user dari parameter

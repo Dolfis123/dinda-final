@@ -20,6 +20,8 @@ interface Pegawai {
 const Pegawai: React.FC = () => {
   const [pegawai, setPegawai] = useState<Pegawai[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage] = useState<number>(10);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState<boolean>(false);
   const [currentPegawai, setCurrentPegawai] = useState<Pegawai | null>(null);
@@ -87,7 +89,6 @@ const Pegawai: React.FC = () => {
   const handleDelete = async (id: number) => {
     try {
       await axios.delete(`http://localhost:5000/api/pegawai/${id}`);
-
       fetchPegawai();
       closeConfirm();
     } catch (error) {
@@ -117,12 +118,30 @@ const Pegawai: React.FC = () => {
     }));
   };
 
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < Math.ceil(pegawai.length / itemsPerPage)) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = pegawai.slice(indexOfFirstItem, indexOfLastItem);
+
   return (
-    <div style={{ color: 'black', fontWeight: '500' }}>
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-xl font-bold">Data Pegawai</h1>
+    <div
+      className="relative flex flex-col w-full h-full text-gray-700 bg-white shadow-md rounded-xl bg-clip-border"
+      style={{ color: 'black', fontWeight: '500' }}
+    >
+      <div className="p-4">
         <button
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          className="bg-blue-500 text-white p-2 rounded"
           onClick={() => openModal('add')}
         >
           Tambah Pegawai
@@ -132,98 +151,116 @@ const Pegawai: React.FC = () => {
       {isLoading ? (
         <p>Loading...</p>
       ) : (
-        <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead
-              className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 "
-              style={{ color: 'black', fontWeight: '500' }}
-            >
+        <div className="p-6 px-0 overflow-scroll">
+          <table className="w-full mt-4 text-left table-auto min-w-max">
+            <thead>
               <tr>
-                <th scope="col" className="px-6 py-3">
+                <th className="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
                   No
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th className="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
                   Id Pegawai
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th className="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
                   Nama
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th className="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
                   NIP/NIK
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th className="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
                   Tempat Lahir
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th className="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
                   Tanggal Lahir
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th className="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
                   Agama
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th className="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
                   Pendidikan
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th className="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
                   Jenis Kelamin
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th className="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
                   Jabatan
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th className="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
                   Pangkat/Golongan
                 </th>
-                <th scope="col" className="px-6 py-3">
-                  Status OAP
+                <th className="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
+                  Status Oap/Non Oap
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th className="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
                   Suku
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th className="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
                   Instansi
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th className="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
                   Aksi
                 </th>
               </tr>
             </thead>
-            <tbody
-              className="p-4 border-b border-blue-gray-50"
-              style={{ color: 'black', fontWeight: '500' }}
-            >
-              {pegawai.map((p, index) => (
+            <tbody>
+              {currentItems.map((p, index) => (
                 <tr
                   key={p.id_pegawai}
                   className="odd:bg-white even:bg-gray-50 dark:odd:bg-gray-900 dark:even:bg-gray-800 border-b dark:border-gray-700"
                 >
-                  <td className="px-6 py-4">{index + 1}</td>
-                  <td className="px-6 py-4">{p.id_pegawai}</td>
-                  <td className="px-6 py-4">{p.nama}</td>
-                  <td className="px-6 py-4">{p.nip_nik}</td>
-                  <td className="px-6 py-4">{p.tempat_lahir}</td>
-                  <td className="px-6 py-4">{p.tanggal_lahir}</td>
-                  <td className="px-6 py-4">{p.agama}</td>
-                  <td className="px-6 py-4">{p.pendidikan}</td>
-                  <td className="px-6 py-4">{p.jenis_kelamin}</td>
-                  <td className="px-6 py-4">{p.jabatan}</td>
-                  <td className="px-6 py-4">{p.pangkat_golongan}</td>
-                  <td className="px-6 py-4">{p.status_oap}</td>
-                  <td className="px-6 py-4">{p.suku}</td>
-                  <td className="px-6 py-4">{p.instansi}</td>
-                  <td className="px-6 py-4">
+                  <td className="p-4 border-b border-blue-gray-50">
+                    {indexOfFirstItem + index + 1}
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    {p.id_pegawai}
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">{p.nama}</td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    {p.nip_nik}
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    {p.tempat_lahir}
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    {p.tanggal_lahir}
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    {p.agama}
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    {p.pendidikan}
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    {p.jenis_kelamin}
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    {p.jabatan}
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    {p.pangkat_golongan}
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    {p.status_oap}
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">{p.suku}</td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    {p.instansi}
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
                     <button
                       onClick={() => openModal('view', p)}
                       className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                     >
                       Lihat
                     </button>{' '}
-                    |{' '}
+                    |
                     <button
                       onClick={() => openModal('edit', p)}
                       className="font-medium text-green-600 dark:text-green-500 hover:underline"
                     >
                       Edit
                     </button>{' '}
-                    |{' '}
+                    |
                     <button
                       onClick={() => openConfirm(p)}
                       className="font-medium text-red-600 dark:text-red-500 hover:underline"
@@ -237,6 +274,29 @@ const Pegawai: React.FC = () => {
           </table>
         </div>
       )}
+
+      {/* Pagination Controls */}
+      <div className="flex items-center justify-between p-4 border-t border-blue-gray-50">
+        <p className="block font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
+          Halaman {currentPage} dari {Math.ceil(pegawai.length / itemsPerPage)}
+        </p>
+        <div className="flex gap-2">
+          <button
+            onClick={handlePreviousPage}
+            className="select-none rounded-lg border border-gray-900 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-gray-900 transition-all hover:opacity-75 focus:ring focus:ring-gray-300 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+            disabled={currentPage === 1}
+          >
+            Sebelumnya
+          </button>
+          <button
+            onClick={handleNextPage}
+            className="select-none rounded-lg border border-gray-900 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-gray-900 transition-all hover:opacity-75 focus:ring focus:ring-gray-300 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+            disabled={currentPage === Math.ceil(pegawai.length / itemsPerPage)}
+          >
+            Berikutnya
+          </button>
+        </div>
+      </div>
 
       {/* Modal untuk tambah, edit, dan lihat */}
       {isModalOpen && (
@@ -266,7 +326,7 @@ const Pegawai: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-gray-700">NIP/NIK</label>
+                  <label className="block text-gray-700">NIP</label>
                   <input
                     type="text"
                     className="border rounded w-full py-2 px-3"
@@ -274,7 +334,6 @@ const Pegawai: React.FC = () => {
                     value={currentPegawai?.nip_nik || ''}
                     onChange={handleInputChange}
                     readOnly={modalAction === 'view'}
-                    // Hapus required untuk membuat NIP/NIK opsional
                   />
                 </div>
 
@@ -383,7 +442,9 @@ const Pegawai: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-gray-700">Status OAP</label>
+                  <label className="block text-gray-700">
+                    Status Oap/Non Oap
+                  </label>
                   <select
                     className="border rounded w-full py-2 px-3"
                     name="status_oap"
@@ -392,7 +453,7 @@ const Pegawai: React.FC = () => {
                     disabled={modalAction === 'view'}
                     required
                   >
-                    <option value="">Pilih Status OAP</option>
+                    <option value="">Pilih Status Oap/Non Oap</option>
                     <option value="OAP">OAP</option>
                     <option value="Non OAP">Non OAP</option>
                   </select>

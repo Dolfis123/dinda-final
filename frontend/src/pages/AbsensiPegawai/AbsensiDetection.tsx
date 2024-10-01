@@ -83,29 +83,59 @@ const AbsensiDetection: React.FC = () => {
       return;
     }
 
-    try {
-      const response = await fetch('http://localhost:5000/api/absensi/absen', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+    // Dapatkan lokasi pengguna
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+
+          console.log(`Latitude: ${latitude}, Longitude: ${longitude}`); // Pastikan koordinat ini akurat
+
+          // Kirim data ke backend
+          try {
+            const response = await fetch(
+              'http://localhost:5000/api/absensi/absen',
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  image: imageSrc,
+                  latitude, // Kirim latitude ke backend
+                  longitude, // Kirim longitude ke backend
+                }),
+              },
+            );
+
+            const data = await response.json();
+            console.log('Response data:', data); // Log respons untuk debugging
+
+            if (data.success) {
+              setNama(data.nama); // Set nama pegawai dari respons
+              setMessage(data.message); // Set pesan dari respons
+              setIsModalOpen(true); // Buka modal saat pesan diterima
+            } else {
+              alert(data.message); // Jika absensi gagal, tampilkan alert
+              setMessage(data.message);
+              setIsModalOpen(true);
+            }
+          } catch (error) {
+            console.error('Error submitting absensi:', error);
+            alert('Terjadi kesalahan saat mengirim absensi.');
+          }
         },
-        body: JSON.stringify({ image: imageSrc }),
-      });
-
-      const data = await response.json();
-      console.log('Response data:', data); // Log respons untuk debugging
-
-      if (data.success) {
-        setNama(data.nama); // Set nama pegawai dari respons
-        setMessage(data.message); // Set pesan dari respons
-        setIsModalOpen(true); // Buka modal saat pesan diterima
-      } else {
-        setMessage(data.message);
-        setIsModalOpen(true); // Tetap buka modal meskipun absensi gagal
-      }
-    } catch (error) {
-      console.error('Error submitting absensi:', error);
-      alert('Terjadi kesalahan saat mengirim absensi.');
+        (error) => {
+          console.error('Error getting location:', error);
+          alert('Tidak bisa mendapatkan lokasi, pastikan GPS diaktifkan.');
+        },
+        {
+          enableHighAccuracy: true, // Aktifkan high accuracy untuk mendapatkan koordinat yang lebih tepat
+        },
+      );
+    } else {
+      alert('Geolocation tidak didukung oleh browser ini.');
     }
   };
 

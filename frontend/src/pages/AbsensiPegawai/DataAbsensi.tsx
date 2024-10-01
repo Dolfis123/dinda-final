@@ -230,7 +230,7 @@ function DataAbsensi() {
           className="bg-green-500 text-white p-2 rounded"
           onClick={handleGeneratePDF}
         >
-          Download PDF
+          Unduh PDF
         </button>
       </div>
       {/* Modal untuk Absen Manual */}
@@ -283,13 +283,13 @@ function DataAbsensi() {
                 className="bg-gray-300 text-black p-2 rounded mr-4"
                 onClick={() => setShowModal(false)}
               >
-                Cancel
+                Batal
               </button>
               <button
                 className="bg-blue-500 text-white p-2 rounded"
                 onClick={handleSubmitAbsen}
               >
-                Submit
+                Kirim
               </button>
             </div>
           </div>
@@ -339,7 +339,7 @@ function DataAbsensi() {
                 Nama
               </th>
               <th className="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
-                NIP/NIK
+                NIP
               </th>
               <th className="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
                 Jenis Kelamin
@@ -350,9 +350,7 @@ function DataAbsensi() {
               <th className="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
                 Waktu Absen
               </th>
-              <th className="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
-                Lokasi Absen
-              </th>
+
               <th className="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
                 Status Absen
               </th>
@@ -383,9 +381,7 @@ function DataAbsensi() {
                   <td className="p-4 border-b border-blue-gray-50">
                     {item.waktu_absen}
                   </td>
-                  <td className="p-4 border-b border-blue-gray-50">
-                    {item.lokasi_absen || 'N/A'}
-                  </td>
+
                   <td className="p-4 border-b border-blue-gray-50">
                     {item.status_absen}
                   </td>
@@ -397,7 +393,7 @@ function DataAbsensi() {
             ) : (
               <tr>
                 <td colSpan="8" className="p-4 text-center text-blue-gray-700">
-                  No data available
+                  Tidak Ada Data Yang Tersedia
                 </td>
               </tr>
             )}
@@ -408,7 +404,7 @@ function DataAbsensi() {
       {/* Pagination */}
       <div className="flex items-center justify-between p-4 border-t border-blue-gray-50">
         <p className="block font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-          Page {currentPage} of{' '}
+          Halaman {currentPage} dari{' '}
           {Math.ceil(filteredAbsensi.length / itemsPerPage)}
         </p>
         <div className="flex gap-2">
@@ -418,7 +414,7 @@ function DataAbsensi() {
             type="button"
             disabled={currentPage === 1}
           >
-            Previous
+            Sebelumnya
           </button>
           <button
             onClick={handleNextPage}
@@ -428,7 +424,7 @@ function DataAbsensi() {
               currentPage === Math.ceil(filteredAbsensi.length / itemsPerPage)
             }
           >
-            Next
+            Berikutnya
           </button>
         </div>
       </div>
