@@ -43,7 +43,26 @@ exports.getAllPegawai = async (req, res) => {
     res.status(500).json({ message: "Error retrieving Pegawai", error });
   }
 };
-
+exports.getAllPegawaiWithShift = async (req, res) => {
+  try {
+    const pegawai = await Pegawai.findAll({
+      where: { tipe_karyawan: "Dengan Shift" },
+    });
+    res.status(200).json(pegawai);
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving Pegawai", error });
+  }
+};
+exports.getAllPegawaiWithoutShift = async (req, res) => {
+  try {
+    const pegawai = await Pegawai.findAll({
+      where: { tipe_karyawan: "Tanpa Shift" },
+    });
+    res.status(200).json(pegawai);
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving Pegawai", error });
+  }
+};
 // Read Pegawai by ID
 exports.getPegawaiById = async (req, res) => {
   try {

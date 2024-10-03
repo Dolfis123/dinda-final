@@ -7,6 +7,8 @@ router.post("/", pegawaiController.createPegawai);
 
 // Get All Pegawai
 router.get("/", pegawaiController.getAllPegawai);
+router.get("/with-shift", pegawaiController.getAllPegawaiWithShift);
+router.get("/without-shift", pegawaiController.getAllPegawaiWithoutShift);
 
 // Get Pegawai by ID
 router.get("/:id", pegawaiController.getPegawaiById);

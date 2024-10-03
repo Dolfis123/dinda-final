@@ -1,9 +1,6 @@
-// controllers/absensiController.js
-
 const Absensi = require("../models/Absensi");
 const Pegawai = require("../models/pegawaiModel");
 
-// Mendapatkan semua data absensi dengan informasi pegawai
 exports.getAbsensi = async (req, res) => {
   try {
     const absensi = await Absensi.findAll({
@@ -21,30 +18,61 @@ exports.getAbsensi = async (req, res) => {
   }
 };
 
-// Menambahkan data absensi baru
+// Mendapatkan semua data absensi dengan informasi pegawai
 exports.createAbsensi = async (req, res) => {
   const {
     id_pegawai,
     tanggal_absen,
-    waktu_absen, // Ini mungkin null dari frontend
+    waktu_absen,
     lokasi_absen,
     status_absen,
     metode_absen,
+    shift_absen,
   } = req.body;
 
   try {
     const now = new Date();
-    const formattedWaktuAbsen = waktu_absen || now.toTimeString().split(" ")[0]; // Otomatis isi waktu absen jika tidak disediakan
+    const formattedWaktuAbsen = waktu_absen || now.toTimeString().split(" ")[0];
+    const formattedTanggalAbsen =
+      tanggal_absen || now.toISOString().split("T")[0];
 
-    // Cek jika pegawai sudah absen hari ini, dan ambil juga informasi pegawainya
+    // Tentukan batas waktu untuk setiap shift
+    const shiftWaktu = {
+      "Tanpa Shift": { start: "07:00:00", end: "11:15:00" },
+      JP: { start: "06:50:00", end: "11:15:00" },
+      "H & JP": { start: "10:00:00", end: "14:15:00" },
+      JS: { start: "14:00:00", end: "16:15:00" }, // JS = Jaga Sore
+      JSM: { start: "16:00:00", end: "00:15:00" }, // Jaga Sore-Malam
+      JM: { start: "16:00:00", end: "00:15:00" }, // Jaga Malam
+      JP: { start: "06:50:00", end: "11:15:00" }, // Jaga Malam
+    };
+
+    // Cek apakah shift yang diberikan ada dalam daftar
+    if (!shiftWaktu[shift_absen]) {
+      return res.status(400).json({
+        message: "Shift absen tidak valid",
+        success: false,
+      });
+    }
+
+    // Cek apakah waktu absen sesuai dengan jangkauan waktu shift yang dipilih
+    const { start, end } = shiftWaktu[shift_absen];
+    if (formattedWaktuAbsen < start || formattedWaktuAbsen > end) {
+      return res.status(400).json({
+        message: `Waktu absensi tidak sesuai dengan jangkauan shift ${shift_absen}`,
+        success: false,
+      });
+    }
+
+    // Cek jika pegawai sudah absen hari ini
     const existingAbsensi = await Absensi.findOne({
       where: {
         id_pegawai,
-        tanggal_absen: now.toISOString().split("T")[0], // Cek berdasarkan tanggal hari ini
+        tanggal_absen: formattedTanggalAbsen,
       },
       include: {
-        model: Pegawai, // Sertakan data pegawai
-        attributes: ["nama"], // Hanya ambil nama pegawai
+        model: Pegawai,
+        attributes: ["nama"],
       },
     });
 
@@ -62,11 +90,12 @@ exports.createAbsensi = async (req, res) => {
     // Buat data absensi baru
     const newAbsensi = await Absensi.create({
       id_pegawai,
-      tanggal_absen: now.toISOString().split("T")[0], // Isi tanggal otomatis
-      waktu_absen: formattedWaktuAbsen, // Gunakan waktu otomatis jika tidak ada
+      tanggal_absen: formattedTanggalAbsen,
+      waktu_absen: formattedWaktuAbsen,
       lokasi_absen,
       status_absen,
-      metode_absen: metode_absen || "Manual", // Default ke Manual jika tidak ada metode absen
+      metode_absen: metode_absen || "Manual",
+      shift_absen,
     });
 
     res.status(201).json({

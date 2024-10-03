@@ -18,7 +18,7 @@ interface Pegawai {
   tipe_karyawan: string; // Tambahkan tipe_karyawan di sini
 }
 
-const Pegawai: React.FC = () => {
+const PegawaiWithoutShift: React.FC = () => {
   const [pegawai, setPegawai] = useState<Pegawai[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -33,7 +33,9 @@ const Pegawai: React.FC = () => {
   // Fungsi untuk mengambil semua data pegawai
   const fetchPegawai = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/pegawai');
+      const response = await axios.get(
+        'http://localhost:5000/api/pegawai/without-shift',
+      );
       setPegawai(response.data);
       setIsLoading(false);
     } catch (error) {
@@ -140,15 +142,7 @@ const Pegawai: React.FC = () => {
       className="relative flex flex-col w-full h-full text-gray-700 bg-white shadow-md rounded-xl bg-clip-border"
       style={{ color: 'black', fontWeight: '500' }}
     >
-      <div className="p-4">
-        <button
-          className="bg-blue-500 text-white p-2 rounded"
-          onClick={() => openModal('add')}
-        >
-          Tambah Pegawai
-        </button>
-      </div>
-
+      <h1>Pegawai / Karywan Tanpa Shift</h1>
       {isLoading ? (
         <p>Loading...</p>
       ) : (
@@ -557,4 +551,4 @@ const Pegawai: React.FC = () => {
   );
 };
 
-export default Pegawai;
+export default PegawaiWithoutShift;

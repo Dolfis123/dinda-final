@@ -58,6 +58,11 @@ const Pegawai = sequelize.define(
       type: DataTypes.STRING(255),
       allowNull: true,
     },
+    tipe_karyawan: {
+      type: DataTypes.ENUM("Dengan Shift", "Tanpa Shift"),
+      allowNull: false,
+      defaultValue: "Tanpa Shift",
+    },
   },
   {
     tableName: "pegawai",

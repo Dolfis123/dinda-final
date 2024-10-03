@@ -256,8 +256,7 @@ const AcountEmployee: React.FC = () => {
           {/* Pagination Controls */}
           <div className="flex items-center justify-between p-4 border-t border-blue-gray-50">
             <p className="block font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-              Halaman {currentPage} dari{' '}
-              {Math.ceil(logins.length / loginsPerPage)}
+              Halaman {currentPage} / {Math.ceil(logins.length / loginsPerPage)}
             </p>
             <div className="flex gap-2">
               <button

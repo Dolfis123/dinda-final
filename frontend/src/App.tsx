@@ -13,6 +13,8 @@ import SignIn from './pages/Authentication/SingIn'; // Correct the filename typo
 import PegawaiAbsensi from './pages/AbsensiPegawai/PegawaiAbsensi';
 import ProtectedRoute from './pages/ProtectedRoute';
 import AcountEmployee from './pages/Dashboard/AcountEmployee';
+import PegawaiDenganShift from './pages/Dashboard/PegawaiDenganShift';
+import PegawaiWithoutShift from './pages/Dashboard/PegawaiWithoutShift';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -106,6 +108,28 @@ function App() {
             <DefaultLayout>
               <PageTitle title="Face Registration Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <FaceRegistration />
+            </DefaultLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/with-shift"
+        element={
+          <ProtectedRoute role="admin">
+            <DefaultLayout>
+              <PageTitle title="Face Registration Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PegawaiDenganShift />
+            </DefaultLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/without-shift"
+        element={
+          <ProtectedRoute role="admin">
+            <DefaultLayout>
+              <PageTitle title="Face Registration Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PegawaiWithoutShift />
             </DefaultLayout>
           </ProtectedRoute>
         }
